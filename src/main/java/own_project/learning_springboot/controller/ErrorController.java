@@ -1,5 +1,6 @@
 package own_project.learning_springboot.controller;
 
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,5 +22,11 @@ public class ErrorController {
     public ResponseEntity<WebResponse<String>> apiException(ResponseStatusException exception) {
         return ResponseEntity.status(exception.getStatusCode())
                 .body(WebResponse.<String>builder().errors(exception.getReason()).build());
+    }
+
+    @ExceptionHandler(JWTDecodeException.class)
+    public ResponseEntity<WebResponse<String>> jWTDecodedException(JWTDecodeException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(WebResponse.<String>builder().errors(exception.getMessage()).build());
     }
 }

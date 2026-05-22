@@ -13,6 +13,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.server.ResponseStatusException;
 import own_project.learning_springboot.entity.User;
 import own_project.learning_springboot.repository.UserRepository;
+import own_project.learning_springboot.service.impl.TokenServiceImpl;
 
 @Component
 @Slf4j
@@ -20,6 +21,9 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TokenServiceImpl tokenService;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -35,13 +39,16 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
 
-        User user = userRepository.findFirstByToken(token)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+        //User user = userRepository.findFirstByToken(token)
+        //        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+
+        //JWT
+        User user = tokenService.nameFromToken(token);
 
         log.info("USER {}", user);
-        if (user.getTokenExpiredAt() < System.currentTimeMillis()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
-        }
+        //if (user.getTokenExpiredAt() < System.currentTimeMillis()) {
+        //    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        //}
 
         return user;
     }

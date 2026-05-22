@@ -1,6 +1,6 @@
-CREATE DATABASE learning_springboot;
+CREATE DATABASE learning_springboot_redis_jwt_token;
 
-USE learning_springboot;
+USE learning_springboot_redis_jwt_token;
 
 ##User
 CREATE TABLE users (

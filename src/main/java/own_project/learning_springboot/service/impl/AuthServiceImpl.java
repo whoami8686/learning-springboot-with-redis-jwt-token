@@ -23,6 +23,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private ValidationServiceImpl validationService;
 
+    @Autowired
+    private TokenServiceImpl tokenService;
+
     @Transactional
     @Override
     public TokenResponse login(LoginUserRequest request) {
@@ -32,13 +35,15 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username or password!"));
 
         if (BCrypt.checkpw(request.getPassword(), user.getPassword())) {
-            user.setToken(UUID.randomUUID().toString());
-            user.setTokenExpiredAt(next30Days());
-            userRepository.save(user);
+            //user.setToken(UUID.randomUUID().toString()); won't be needing this again because we will not using database anymore
+            //user.setTokenExpiredAt(next30Days());
+            //userRepository.save(user);
+
+            String token = tokenService.create(user);
 
             return TokenResponse.builder()
-                    .token(user.getToken())
-                    .expiredAt(user.getTokenExpiredAt())
+                    .token(token)
+                    //.expiredAt(user.getTokenExpiredAt())
                     .build();
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username or password!");
